@@ -29,7 +29,16 @@ async function fetchSources(B) {
   await mkdir(prev, { recursive: true });
   for (const f of B.sources) {
     const url = B.baseUrl + f + '?v=' + Date.now();
-    const res = await fetch(url);
+    let res;
+    for (let a = 1; ; a++) {
+      try { res = await fetch(url); break; }
+      catch (e) {
+        const c = e.cause ? ` (${e.cause.code || ''} ${e.cause.message || e.cause})` : '';
+        if (a >= 3) throw new Error(`fetch ${f}: ${e.message}${c}`);
+        console.warn(`  ! ${f}: ${e.message}${c} — thử lại ${a}/2`);
+        await new Promise(r => setTimeout(r, 1000 * a));
+      }
+    }
     if (!res.ok) throw new Error(`fetch ${f}: HTTP ${res.status}`);
     const text = await res.text();
     const dst = join(SRC_DIR, f);
