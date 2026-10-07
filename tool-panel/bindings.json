@@ -1,8 +1,8 @@
 {
   "schema": "rt-bindings/1",
   "game": "tiemtramouoc",
-  "gameVersion": "12.47.358",
-  "scannedAt": "2026-10-06",
+  "gameVersion": "12.47.368",
+  "scannedAt": "2026-10-07",
   "baseUrl": "https://tiemtramouoc.tensorship.tech/js/",
   "sources": ["game.js", "garden.js", "weather.js", "pet_run.js", "codam.js", "oanquan.js", "collection.js", "banbe.js"],
 
