@@ -1,0 +1,14 @@
+# Browser profile used for CDP debugging — contains cookies/sessions, never commit
+edge-debug-profile/
+
+# Downloaded game source (third-party code). Re-download with: node tool-panel/scan.mjs --fetch
+js/
+
+# Build output — shipped as GitHub Release assets instead
+tool-panel/dist/
+release/
+
+node_modules/
+*.log
+.DS_Store
+Thumbs.db

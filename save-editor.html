@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tiệm Trà — Save Editor</title>
+<style>
+  :root{
+    --bg:#fdf6ec; --card:#fffdf8; --ink:#3a2c22; --soft:#8a7a6c; --line:#ead9c6;
+    --accent:#e26d8a; --accent2:#2f8a63; --warn:#d9534f; --code:#f3e9dc;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --bg:#1f1a16; --card:#2a2420; --ink:#f0e6da; --soft:#b2a493; --line:#443a30;
+    --accent:#f08aa6; --accent2:#4cc088; --warn:#ff6b67; --code:#332b23; color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#1f1a16; --card:#2a2420; --ink:#f0e6da; --soft:#b2a493; --line:#443a30;
+    --accent:#f08aa6; --accent2:#4cc088; --warn:#ff6b67; --code:#332b23; color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:880px;margin:0 auto;padding-block:24px;padding-left:16px;padding-right:16px}
+  h1{font-size:1.5rem;margin:0 0 4px}
+  h2{font-size:1.05rem;margin:0 0 12px;color:var(--accent)}
+  .sub{color:var(--soft);margin:0 0 20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px}
+  .step{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;margin-right:8px}
+  code,pre{background:var(--code);border-radius:8px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+  code{padding:2px 6px}
+  pre{padding:12px;overflow-x:auto;position:relative;border:1px solid var(--line);white-space:pre-wrap;word-break:break-all}
+  textarea{width:100%;min-height:120px;background:var(--code);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;resize:vertical}
+  button{cursor:pointer;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;background:var(--accent);color:#fff}
+  button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  button.ghost{background:transparent;color:var(--soft);border:1px solid var(--line)}
+  button:active{transform:translateY(1px)}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+  .fld{display:flex;flex-direction:column;gap:4px}
+  .fld label{font-size:12px;color:var(--soft)}
+  .fld input{background:var(--code);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;width:160px}
+  .chks{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:4px}
+  .chk{display:flex;align-items:center;gap:7px;font-size:13px}
+  .muted{color:var(--soft);font-size:12.5px}
+  .ok{color:var(--accent2)} .bad{color:var(--warn)}
+  hr{border:none;border-top:1px solid var(--line);margin:16px 0}
+  .copybtn{position:absolute;top:8px;right:8px;padding:4px 10px;font-size:11px}
+  #status{min-height:18px;font-size:12.5px;margin-top:8px}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🧋 Tiệm Trà Mơ Ước — Save Editor</h1>
+  <p class="sub">Chỉnh save <code>tsShop2</code> (JSON thuần). Chạy hoàn toàn trong trình duyệt — không gửi đi đâu.</p>
+
+  <div class="card">
+    <h2><span class="step">1</span>Lấy save ra khỏi game</h2>
+    <p class="muted">Mở game trong trình duyệt → F12 → tab Console → dán lệnh này rồi copy chuỗi in ra:</p>
+    <pre id="exportCmd">copy(localStorage.getItem('tsShop2'))<button class="copybtn sec" data-copy="#exportCmd">Copy</button></pre>
+    <p class="muted"><code>copy(...)</code> tự đưa save vào clipboard. Nếu không được, dùng <code>localStorage.getItem('tsShop2')</code> rồi copy tay.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="step">2</span>Dán save vào đây</h2>
+    <textarea id="saveIn" placeholder='Dán chuỗi JSON save (bắt đầu bằng {"lifeV":...) ...'></textarea>
+    <div class="row" style="margin-top:10px">
+      <button id="btnLoad">Nạp &amp; phân tích</button>
+      <button class="ghost" id="btnSample">Tạo save mới (mặc định)</button>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <div class="card" id="editCard" hidden>
+    <h2><span class="step">3</span>Chỉnh nhanh</h2>
+    <div class="row">
+      <div class="fld"><label>💰 Tiền (money)</label><input id="f_money" type="number"></div>
+      <div class="fld"><label>📅 Ngày (day)</label><input id="f_day" type="number"></div>
+      <div class="fld"><label>🏪 Tên quán</label><input id="f_shop" type="text" style="width:200px"></div>
+      <div class="fld"><label>💵 Doanh thu năm</label><input id="f_yearRev" type="number"></div>
+    </div>
+    <hr>
+    <div class="row" style="gap:18px">
+      <label class="chk"><input type="checkbox" id="c_rating5"> ⭐ Ép rating 5 sao (40 review)</label>
+      <label class="chk"><input type="checkbox" id="c_unlockAll"> 🔓 Mở khoá tất cả nguyên liệu</label>
+      <label class="chk"><input type="checkbox" id="c_maxUpg"> ⬆️ Max cấp nâng cấp (tra/huong/top/equip/staff/onl)</label>
+      <label class="chk"><input type="checkbox" id="c_stock"> 📦 Nạp đầy kho (99 mỗi nguyên liệu, hạn xa)</label>
+    </div>
+    <p class="muted" style="margin:12px 0 6px">Cờ trang bị / nhân sự (<code>S.upg</code>):</p>
+    <div class="chks" id="upgFlags"></div>
+    <div class="row" style="margin-top:14px">
+      <button id="btnApply">Áp dụng vào JSON</button>
+      <span class="muted" id="applyNote"></span>
+    </div>
+  </div>
+
+  <div class="card" id="rawCard" hidden>
+    <h2><span class="step">4</span>Editor JSON thô (sửa gì cũng được)</h2>
+    <textarea id="rawJson" style="min-height:220px"></textarea>
+    <div class="row" style="margin-top:10px">
+      <button class="sec" id="btnFormat">Format</button>
+      <button class="sec" id="btnValidate">Kiểm tra JSON</button>
+      <span class="muted" id="rawNote"></span>
+    </div>
+  </div>
+
+  <div class="card" id="outCard" hidden>
+    <h2><span class="step">5</span>Ghi save lại vào game</h2>
+    <p class="muted">Copy lệnh dưới → dán vào Console của game → Enter (game sẽ tự reload):</p>
+    <pre id="importCmd"><button class="copybtn sec" data-copy="#importCmd">Copy</button></pre>
+    <p class="muted">Hoặc chỉ copy JSON: <button class="ghost" id="btnCopyJson" style="padding:4px 10px">Copy JSON</button></p>
+  </div>
+
+  <p class="muted" style="text-align:center">⚠️ Sao lưu save gốc trước khi sửa. Giá trị phi lý (ngày &lt;1, tiền âm) có thể gây lỗi game.</p>
+</div>
+
+<script>
+"use strict";
+var S=null;
+var $=function(s){return document.querySelector(s)};
+function status(msg,cls){var e=$('#status');e.className='';if(cls)e.classList.add(cls);e.textContent=msg}
+
+// Known S.upg boolean flags (from game.js recon). Not exhaustive — raw editor covers the rest.
+var UPG_FLAGS=[
+  ['sealer','Máy dán nắp'],['ac','Máy lạnh (nới ngưỡng chờ)'],['fridge','Tủ lạnh (đá không hết hạn)'],
+  ['slot4','6 chỗ khách'],['floor2','Lầu 2 (10 chỗ)'],
+  ['staffGuard','Bảo vệ (0% tiền giả)'],['staffGz','Gen Z kéo khách'],['staffMkt','Marketing +45% khách'],
+  ['staffSv','Phục vụ đêm'],['staffRacer','Racer đơn online'],['staffButler','Quản gia (auto chăm pet)']
+];
+
+function buildUpgFlags(){
+  var box=$('#upgFlags');box.innerHTML='';
+  UPG_FLAGS.forEach(function(f){
+    var lbl=document.createElement('label');lbl.className='chk';
+    lbl.innerHTML='<input type="checkbox" data-upg="'+f[0]+'"> '+f[1];
+    box.appendChild(lbl);
+  });
+}
+buildUpgFlags();
+
+function loadSave(text){
+  var obj;
+  try{obj=JSON.parse(text)}catch(e){status('JSON không hợp lệ: '+e.message,'bad');return false}
+  if(typeof obj!=='object'||obj===null||!('money' in obj)){status('Không giống save (thiếu field money).','bad');return false}
+  S=obj;
+  var keys=Object.keys(S).length;
+  status('✓ Nạp OK — '+keys+' field · tiền '+fmt(S.money)+' · ngày '+S.day,'ok');
+  $('#editCard').hidden=false;$('#rawCard').hidden=false;$('#outCard').hidden=false;
+  fillForm();refreshRaw();refreshOut();
+  return true;
+}
+function fmt(n){return (Number(n)||0).toLocaleString('vi-VN')+'đ'}
+
+function fillForm(){
+  $('#f_money').value=S.money||0;
+  $('#f_day').value=S.day||1;
+  $('#f_shop').value=S.shopName||'';
+  $('#f_yearRev').value=S.yearRev||0;
+  document.querySelectorAll('[data-upg]').forEach(function(cb){
+    cb.checked=!!(S.upg&&S.upg[cb.dataset.upg]);
+  });
+}
+
+function applyQuick(){
+  if(!S)return;
+  S.money=Math.round(+$('#f_money').value||0);
+  S.day=Math.max(1,Math.round(+$('#f_day').value||1));
+  S.shopName=$('#f_shop').value;
+  S.yearRev=Math.round(+$('#f_yearRev').value||0);
+  S.upg=S.upg||{};
+  document.querySelectorAll('[data-upg]').forEach(function(cb){
+    if(cb.checked)S.upg[cb.dataset.upg]=true; else delete S.upg[cb.dataset.upg];
+  });
+
+  if($('#c_rating5').checked){
+    var arr=[];for(var i=0;i<40;i++)arr.push({s:5,why:'great'});
+    S.reviews=arr; S.revTotal=Math.max(S.revTotal||0,40); S.star5Count=Math.max(S.star5Count||0,40);
+  }
+  if($('#c_unlockAll').checked){
+    S.unlocked=S.unlocked||{};
+    Object.keys(S.unlocked).forEach(function(k){S.unlocked[k]=true});
+    if(S.stock)Object.keys(S.stock).forEach(function(k){S.unlocked[k]=true});
+  }
+  if($('#c_maxUpg').checked){
+    S.upgLv=S.upgLv||{};
+    ['tra','huong','top','equip','staff','onl'].forEach(function(k){S.upgLv[k]=Math.max(S.upgLv[k]||0,20)});
+  }
+  if($('#c_stock').checked && S.stock){
+    var exp=(S.day||1)+60;
+    Object.keys(S.stock).forEach(function(k){ S.stock[k]=[{q:99,exp:exp}] });
+  }
+  refreshRaw();refreshOut();
+  $('#applyNote').textContent='✓ Đã áp dụng vào JSON bên dưới';$('#applyNote').className='muted ok';
+}
+
+function refreshRaw(){ $('#rawJson').value=JSON.stringify(S,null,2) }
+function syncFromRaw(){
+  try{S=JSON.parse($('#rawJson').value);$('#rawNote').textContent='✓ JSON hợp lệ';$('#rawNote').className='muted ok';fillForm();refreshOut();return true}
+  catch(e){$('#rawNote').textContent='✗ '+e.message;$('#rawNote').className='muted bad';return false}
+}
+function refreshOut(){
+  var compact=JSON.stringify(S);
+  var cmd="localStorage.setItem('tsShop2', "+JSON.stringify(compact)+"); location.reload();";
+  var pre=$('#importCmd');
+  pre.textContent=cmd;
+  var btn=document.createElement('button');btn.className='copybtn sec';btn.dataset.copy='#importCmd';btn.textContent='Copy';
+  pre.appendChild(btn);
+}
+
+$('#btnLoad').onclick=function(){loadSave($('#saveIn').value.trim())};
+$('#btnSample').onclick=function(){
+  var sample={lifeV:2,off:{},money:400000,day:1,stock:{},unlocked:{tra:true,sua:true,tc:true},upg:{sealer:true},
+    equipLv:{binhrot:1,sealer:1,khaytop:1,lyduongda:1},upgLv:{tra:0,huong:0,top:0,equip:0,staff:0,onl:0},
+    reviews:[],served:0,totalRev:0,shopName:'Tiệm Trà Mơ Ước'};
+  $('#saveIn').value=JSON.stringify(sample);
+  loadSave($('#saveIn').value);
+  status('Đã tạo save mẫu tối giản — nên lấy save thật của bạn để có cấu trúc đầy đủ.','ok');
+};
+$('#btnApply').onclick=applyQuick;
+$('#btnFormat').onclick=function(){if(syncFromRaw())refreshRaw()};
+$('#btnValidate').onclick=syncFromRaw;
+$('#rawJson').addEventListener('change',syncFromRaw);
+$('#btnCopyJson').onclick=function(){copyText(JSON.stringify(S))};
+
+function copyText(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){status('✓ Đã copy vào clipboard','ok')},
+      function(){status('Không copy được — chọn và Ctrl+C thủ công.','bad')});
+  } else { status('Trình duyệt không hỗ trợ copy tự động — chọn và Ctrl+C.','bad'); }
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-copy]');if(!b)return;
+  var el=$(b.dataset.copy);if(!el)return;
+  var txt=(el.id==='importCmd')?(el.textContent.replace(/Copy$/,'')):el.textContent.replace(/Copy$/,'');
+  copyText(txt.trim());
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+{
+  "schema": "rt-bindings/1",
+  "game": "tiemtramouoc",
+  "gameVersion": "12.47.358",
+  "scannedAt": "2026-10-06",
+  "baseUrl": "https://tiemtramouoc.tensorship.tech/js/",
+  "sources": ["game.js", "garden.js", "weather.js", "pet_run.js", "codam.js", "oanquan.js", "collection.js", "banbe.js"],
+
+  "fn": {
+    "save":               { "name": "save",               "anchor": "if(window.tsHostOk&&!window.tsHostOk())return;" },
+    "pack":               { "name": "pack",               "anchor": "return JSON.stringify(S,function(k,v){if(this===S&&k==='reviews')" },
+    "head":               { "name": "head" },
+    "renderPrep":         { "name": "renderPrep",         "anchor": "R.mode='prep';if(AU.ctx)musSync();" },
+    "switchTab":          { "name": "switchTab",          "anchor": "if(R.tab === 'vuon' && k !== 'vuon' && window.Garden" },
+    "tick":               { "name": "tick",               "anchor": "const dt=.1;" },
+    "pauseGame":          { "name": "pauseGame",          "anchor": "<h2>Tạm dừng ca bán</h2>" },
+    "resumeGame":         { "name": "resumeGame",         "anchor": "R.paused=false;clearInterval(timer);timer=setInterval(tick,100)" },
+    "endDay":             { "name": "endDay",             "anchor": "clearInterval(timer);clearTimeout(R._gzCatchTimer)" },
+    "tryOpen":            { "name": "tryOpen" },
+    "rating":             { "name": "rating",             "anchor": "const r=(S.reviews||[]).slice(0,40);if(!r.length)return 4;" },
+    "stars":              { "name": "stars",              "params": "c,online", "anchor": "if(c&&c.isSpecialRecipeGuest)return {s:5,why:'special_recipe'};" },
+    "checkReset5":        { "name": "checkReset5StarRating", "params": "", "anchor": "Đạt 5 sao: reset về 0 sao để bắt đầu chu kỳ cày mới" },
+    "traffic":            { "name": "traffic",            "anchor": "Tăng trưởng khách theo ngày: Càng về sau quán càng nổi tiếng" },
+    "addStock":           { "name": "addStock",           "params": "k,q,st=S,allowInSale=false", "anchor": "không thể nhập thêm nguyên liệu!');return}if(!q)return;" },
+    "syncFlav":           { "name": "syncFlav",           "anchor": "if(S.off)delete S.off[k];S.unlocked[k]=qty(k)>0" },
+    "handleUpgLv":        { "name": "handleUpgLv",        "params": "cat", "anchor": "Két không đủ tiền để nâng cấp cấp độ!" },
+    "getUpgLvCost":       { "name": "getUpgLvCost",       "params": "lv", "anchor": "Max 500tr ở cấp 20" },
+    "setStartupLocation": { "name": "setStartupLocation", "params": "id", "anchor": "để chuyển điểm khởi nghiệp!" },
+    "isStaffActive":      { "name": "isStaffActive",      "params": "id", "anchor": "if(id === 'staffOn' && R && R.staffOnTempCover) return true;" },
+    "isTaxActive":        { "name": "isTaxActive",        "anchor": "return S.tax.expiresAt && Date.now() < S.tax.expiresAt && S.tax.rate > 0;" },
+    "cheatHit":           { "name": "cheatHit",           "params": "", "anchor": "const keep=(1+Math.floor(Math.random()*9))*100000;" },
+    "getPetMaxStat":      { "name": "getPetMaxStat" },
+    "addPetExp":          { "name": "addPetExp" },
+    "toast":              { "name": "toast" },
+    "saveCfg":            { "name": "saveCfg",            "anchor": "try{localStorage.setItem(OWNER_SAVE,JSON.stringify(CFG))}catch(e){}}" },
+    "openBankDeposit":    { "name": "openBankDepositDlg" },
+    "openBankWithdraw":   { "name": "openBankWithdrawDlg" },
+    "openChiNhanh":       { "name": "openChiNhanhView" },
+    "openMxh":            { "name": "openMxhView" }
+  },
+
+  "lex": {
+    "timer":             { "name": "timer",             "pattern": "\\}, cup, ([\\w$]+)=null, uid=0" },
+    "CFG":               { "name": "CFG",               "pattern": "let ([\\w$]+)=JSON\\.parse\\(JSON\\.stringify\\(DEFAULT_CONFIG\\)\\)" },
+    "ITEMS":             { "name": "ITEMS",             "pattern": "Object\\.keys\\(([\\w$]+)\\)\\.forEach\\(k=>\\{DEFAULT_CONFIG\\.cost\\[k\\]" },
+    "EVS":               { "name": "EVS",               "pattern": "const ([\\w$]+)=\\{\\s*hot:\\{n:'Trời nóng'" },
+    "FLAV_KEYS":         { "name": "FLAV_KEYS",         "pattern": "\\{([\\w$]+)\\.forEach\\(k=>\\{if\\(S\\.off\\)delete S\\.off\\[k\\]" },
+    "STARTUP_LOCATIONS": { "name": "STARTUP_LOCATIONS", "pattern": "return ([\\w$]+)\\.find\\(l => l\\.id === curId\\)" },
+    "BRANCH_LOCATIONS":  { "name": "BRANCH_LOCATIONS",  "pattern": "branchOnlBoost=1\\+\\(S\\.branches\\?([\\w$]+)\\.reduce" },
+    "UPG_LV_CFG":        { "name": "UPG_LV_CFG",        "pattern": "const cfg = ([\\w$]+)\\[cat\\];" },
+    "TAX_CYCLE_MS":      { "name": "TAX_CYCLE_MS",      "pattern": "([\\w$]+) = 72 \\* 3600 \\* 1000" },
+    "TXT":               { "name": "TXT",               "pattern": "const ([\\w$]+)=\\{\"great\": \\[" },
+    "qty":               { "name": "qty",               "pattern": "const ([\\w$]+)=k=>\\(S&&S\\.stock&&S\\.stock\\[k\\]\\)" }
+  },
+
+  "obj": {
+    "garden": { "name": "Garden",       "members": ["render", "waterAll", "harvestAll", "advanceDay", "SEED_DEFS"] },
+    "crush":  { "name": "MilkTeaCrush", "members": ["open", "close", "getState"] }
+  },
+
+  "state": {
+    "money": "money", "day": "day", "shopName": "shopName",
+    "reviews": "reviews",
+    "revTotal":   { "path": "revTotal",   "optional": true },
+    "star5Count": { "path": "star5Count", "optional": true },
+    "unlocked": "unlocked", "stock": "stock", "upg": "upg", "upgLv": "upgLv",
+    "garden": "garden", "gardenSeeds": "garden.seeds", "gardenPlots": "garden.plots",
+    "pet": "pet", "branches": "branches", "tax": "tax", "staffFlags": "upg",
+    "ev":    { "path": "ev",    "optional": true },
+    "evDay": { "path": "evDay", "optional": true },
+    "mood":  { "path": "mood",  "optional": true },
+    "startupLocation": "startupLocation"
+  },
+
+  "runtime": {
+    "mode": "mode", "tab": "tab",
+    "running":     { "path": "running",     "optional": true, "note": "chỉ có khi đang bán" },
+    "paused":      { "path": "paused",      "optional": true, "note": "chỉ có khi đang bán" },
+    "slots":       { "path": "slots",       "optional": true, "note": "chỉ có khi đang bán" },
+    "online":      { "path": "online",      "optional": true, "note": "chỉ có khi đang bán" },
+    "staffDayOff": { "path": "staffDayOff", "optional": true },
+    "staffLate":   { "path": "staffLate",   "optional": true }
+  },
+
+  "values": {
+    "storageKey":      { "value": "tsShop2", "pattern": "const SAVE='([^']+)'" },
+    "ownerKey":        { "value": "tsOwner", "pattern": "OWNER_SAVE='([^']+)'" },
+    "ratingWindow":    { "value": 40,        "pattern": "\\(S\\.reviews\\|\\|\\[\\]\\)\\.slice\\(0,(\\d+)\\)" },
+    "reset5Threshold": { "value": 4.85,      "pattern": "if\\(curR >= ([\\d.]+)\\)" },
+    "tickDt":          { "value": 0.1,       "pattern": "const dt=([\\d.]+);" },
+    "tickMs":          { "value": 100,       "pattern": "timer=setInterval\\(tick,(\\d+)\\)" },
+    "taxPct":          { "value": 15,        "pattern": "const pct = (\\d+);\\s*const taxAmount" },
+    "taxCycleMs":      { "value": 259200000, "pattern": "= (72) \\* 3600 \\* 1000", "scale": 3600000 },
+    "moveCost":        { "value": 1000000,   "pattern": "const moveCost = isBackToDefault \\? 0 : (\\d+);" },
+    "reviewCap":       { "value": 2500,      "pattern": "if\\(S\\.reviews\\.length>(\\d+)\\)S\\.reviews\\.length=" },
+    "guardStaffId":    { "value": "staffGuard", "pattern": "if\\(isStaffActive\\('([\\w$]+)'\\)\\)\\{\\s*fakeChance = 0;" },
+    "custPat":         { "value": "pat",     "pattern": "const w=1-c\\.([\\w$]+)/c\\.[\\w$]+," },
+    "custPatMax":      { "value": "max",     "pattern": "const w=1-c\\.[\\w$]+/c\\.([\\w$]+)," },
+    "wagePrefix":      { "value": "wage",    "pattern": "([a-z]+)Guard:\\d+" },
+    "staffPrefix":     { "value": "staff",   "pattern": "isStaffActive\\('([a-z]+)Guard'\\)" },
+    "whyGreat":        { "value": "great",   "pattern": "let s=5,why='([a-z]+)'" },
+    "defaultLocId":    { "value": "default", "pattern": "curLoc\\.id === '([\\w$]+)' \\|\\| curLoc\\." },
+    "gardenTabKey":    { "value": "vuon",    "pattern": "if\\(R\\.tab === '([a-z]+)' && k !== '[a-z]+' && window\\.Garden" },
+    "sanitizeCapPerDay": { "value": 500000000, "pattern": "const cap=CFG\\.[\\w$]+\\+S\\.day\\*(\\d+);" }
+  },
+
+  "lists": {
+    "tabKeys": {
+      "value": ["kho", "vuon", "thucung", "khoinghiep", "chinhanh", "mxh", "kpi", "thue", "nangcap", "gia", "danhgia", "tongket", "banbe", "crush"],
+      "region": ["const tabs=[", "];"],
+      "patterns": ["\\['([a-z]+)',"]
+    },
+    "staffIds": {
+      "value": ["staff0", "staff1", "staff2", "staff3", "staffOn", "staffGz", "staffBuyer", "staffSv", "staffMkt", "staffGuard", "staffRacer", "staffButler"],
+      "patterns": ["isStaffActive\\('([\\w$]+)'\\)", "S\\.upg\\.(staff[A-Z][\\w$]*)"]
+    },
+    "equipFlags": {
+      "value": ["sealer", "fridge", "floor2", "brandKit", "mascot", "slot4", "seats", "motorbike", "sign", "guard1", "guard2", "ads", "ac"],
+      "patterns": ["S\\.upg\\.(?!staff)([a-z][\\w$]*)"]
+    },
+    "priceCapKeys": {
+      "value": ["priceCap", "teaCap", "teaCapMatcha", "itemCap", "sizeCap"],
+      "region": ["const DEFAULT_CONFIG={", "};"],
+      "patterns": ["[\\s,{]((?:price|tea|item|size)Cap[\\w$]*):"]
+    },
+    "moods": {
+      "value": ["vui", "kho"],
+      "patterns": ["md(?:===|!==)'([a-z]+)'"]
+    },
+    "petStats": {
+      "value": ["hunger", "clean", "happiness", "energy"],
+      "patterns": ["S\\.pet\\.([a-z]+) = maxS"]
+    },
+    "petTypes": {
+      "value": ["dog", "cat"],
+      "patterns": ["S\\.pet\\.type === '([a-z]+)'"]
+    }
+  },
+
+  "fields": {
+    "plotLocked":    { "value": "locked",           "file": "garden.js" },
+    "organicDays":   { "value": "organicBuffDays",  "file": "garden.js" },
+    "organicBoost":  { "value": "organicBuffBoost", "file": "garden.js" },
+    "lemonDays":     { "value": "lemonBuffDays",    "file": "garden.js" },
+    "lemonBoost":    { "value": "lemonBuffBoost",   "file": "garden.js" },
+    "petUnlocked":   { "value": "unlocked",         "file": "game.js", "pattern": "S\\.pet\\.(unlocked)" },
+    "petType":       { "value": "type",             "file": "game.js", "pattern": "S\\.pet\\.(type) ===" },
+    "petLevel":      { "value": "level",            "file": "game.js", "pattern": "getPetMaxStat\\(S\\.pet\\.(level)\\)" },
+    "branchBought":  { "value": "bought",           "file": "game.js", "pattern": "S\\.branches\\[[\\w.]+\\]\\.(bought)" },
+    "branchClosed":  { "value": "closed",           "file": "game.js", "pattern": "S\\.branches\\[[\\w.]+\\]\\.(closed)" },
+    "branchLevel":   { "value": "level",            "file": "game.js", "pattern": "S\\.branches\\[[\\w.]+\\]\\.(level)" },
+    "evId":          { "value": "id",        "file": "game.js", "pattern": "return !!e&&e\\.([\\w$]+)===id\\}" },
+    "starsScore":    { "value": "s",         "file": "game.js", "pattern": "isSpecialRecipeGuest\\)return \\{([\\w$]+):5,[\\w$]+:'special_recipe'\\}" },
+    "starsWhy":      { "value": "why",       "file": "game.js", "pattern": "isSpecialRecipeGuest\\)return \\{[\\w$]+:5,([\\w$]+):'special_recipe'\\}" },
+    "locId":         { "value": "id",        "file": "game.js", "pattern": "\\.find\\(l => l\\.([\\w$]+) === curId\\)" },
+    "branchId":      { "value": "id",        "file": "game.js", "pattern": "S\\.branches\\[b\\.([\\w$]+)\\]" },
+    "evName":        { "value": "n",         "file": "game.js", "pattern": "hot:\\{([\\w$]+):'Trời nóng'" },
+    "evDesc":        { "value": "d",         "file": "game.js", "pattern": "\\[e\\.id\\]\\.([\\w$]+)\\.replace\\('%'" },
+    "upgName":       { "value": "name",      "file": "game.js", "pattern": "Hạng mục: \\$\\{cfg\\.([\\w$]+)\\} \\(Cấp" },
+    "upgBonus":      { "value": "curBonus",  "file": "game.js", "pattern": "Hiệu quả hiện tại: <b>\\$\\{cfg\\.([\\w$]+)\\(lv\\)\\}" },
+    "locIcon":       { "value": "icon",      "file": "game.js", "pattern": "vnmap-hero-title\">\\$\\{curLoc\\.([\\w$]+)\\}" },
+    "locName":       { "value": "name",      "file": "game.js", "pattern": "vnmap-hero-title\">\\$\\{curLoc\\.[\\w$]+\\} \\$\\{esc\\(curLoc\\.([\\w$]+)\\)\\}" },
+    "locRegion":     { "value": "region",    "file": "game.js", "pattern": "vnmap-hero-region\">\\(\\$\\{esc\\(curLoc\\.([\\w$]+)\\)\\}" },
+    "locDefault":    { "value": "isDefault", "file": "game.js", "pattern": "curLoc\\.id === 'default' \\|\\| curLoc\\.([\\w$]+)\\)" },
+    "branchName":    { "value": "name",      "file": "game.js" },
+    "branchIcon":    { "value": "icon",      "file": "game.js" },
+    "branchCost":    { "value": "buyCost",   "file": "game.js" },
+    "branchRent":    { "value": "dailyRent", "file": "game.js" },
+    "taxExpires":    { "value": "expiresAt", "file": "game.js", "pattern": "S\\.tax\\.([\\w$]+) = now \\+ [\\w$]+;" },
+    "cfgThiefDay":   { "value": "thiefDay",   "file": "game.js", "pattern": "if\\(S\\.day<CFG\\.([\\w$]+)&&S\\.money>CFG\\.[\\w$]+\\)[\\w$]+\\(\\)" },
+    "cfgThiefMoney": { "value": "thiefMoney", "file": "game.js", "pattern": "if\\(S\\.day<CFG\\.[\\w$]+&&S\\.money>CFG\\.([\\w$]+)\\)[\\w$]+\\(\\)" },
+    "cfgStartMoney": { "value": "startMoney", "file": "game.js", "pattern": "const cap=CFG\\.([\\w$]+)\\+S\\.day\\*\\d+;" },
+    "seedName":      { "value": "name",      "file": "garden.js" },
+    "seedIcon":      { "value": "icon",      "file": "garden.js" },
+    "seedDays":      { "value": "days",      "file": "garden.js" }
+  },
+
+  "shapes": {
+    "review": {
+      "value": { "s": "$stars", "t": "$text", "k": "$key", "d": "$day", "o": false, "n": "$name", "f": "😊", "tg": "⭐ Khách quen", "b": "tra", "fl": null, "tp": ["tran"], "ch": false, "sz": "M" },
+      "pattern": "S\\.reviews\\.unshift\\(\\{s:5,t:txt,k:'party_'"
+    },
+    "branch": {
+      "value": { "bought": true, "level": 1, "openedDay": "$day", "closed": false },
+      "pattern": "S\\.branches\\[bid\\] = \\{ bought: true, level: 1, openedDay: S\\.day, closed: false \\}"
+    },
+    "stockBatch": {
+      "value": { "q": 0, "exp": 0 },
+      "pattern": "st\\.stock\\[k\\]\\.push\\(\\{q,exp\\}\\)"
+    },
+    "event": {
+      "value": { "id": "$id", "k": "$item" },
+      "pattern": "const evIs=id=>\\{const e=ev\\(\\);return !!e&&e\\.id===id\\}"
+    },
+    "taxPaid": {
+      "value": { "paidAt": "$now", "expiresAt": "$expires", "rate": "$rate" },
+      "pattern": "S\\.tax\\.paidAt = now;\\s*S\\.tax\\.expiresAt = now \\+ [\\w$]+;[^\\n]*\\n\\s*S\\.tax\\.rate = pct / 100;"
+    }
+  },
+
+  "labels": {
+    "tabs": {
+      "kho": "Kho", "vuon": "Vườn", "thucung": "Thú cưng", "khoinghiep": "Khởi nghiệp", "chinhanh": "Chi nhánh",
+      "mxh": "MXH", "kpi": "KPI", "thue": "Thuế/Bank", "nangcap": "Nâng cấp", "gia": "Giá bán",
+      "danhgia": "Đánh giá", "tongket": "Tổng kết", "banbe": "Bạn bè", "crush": "Crush"
+    },
+    "staff": {
+      "staff0": "NV phụ quầy (tip)", "staff1": "NV phụ quầy", "staff2": "NV pha chế", "staff3": "NV phụ quầy 2",
+      "staffOn": "NV đơn online", "staffGz": "Gen Z", "staffBuyer": "NV đi chợ", "staffSv": "SV trực đêm",
+      "staffMkt": "Marketing", "staffGuard": "Bảo vệ", "staffRacer": "Racer giao hàng", "staffButler": "Quản gia"
+    },
+    "equip": {
+      "sealer": "Máy dán nắp", "fridge": "Tủ lạnh (đá không hết hạn)", "floor2": "Lầu 2 (10 chỗ)", "slot4": "6 chỗ khách",
+      "ac": "Máy lạnh (khách chờ lâu hơn)", "brandKit": "Bộ nhận diện", "mascot": "Mascot", "seats": "Ghế ngồi",
+      "motorbike": "Xe máy giao hàng", "sign": "Bảng hiệu", "guard1": "Bảo vệ cấp 1", "guard2": "Bảo vệ cấp 2", "ads": "Quảng cáo"
+    },
+    "moods": { "vui": "Khách vui (dễ 5★)", "kho": "Khách khó ở (trần 3–4★)" },
+    "petStats": { "hunger": "No", "clean": "Sạch", "happiness": "Vui", "energy": "Năng lượng" }
+  }
+}
