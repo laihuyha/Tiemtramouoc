@@ -16,6 +16,7 @@ Double-click **`run.cmd`** — script tự kiểm tra và cài thứ còn thiế
 run.cmd            :: cài thiếu -> mở game -> build -> inject
 run.cmd -Test      :: + chạy test trên game thật (save được snapshot & khôi phục y nguyên)
 run.cmd -Update    :: game vừa update: tải source mới, quét lại offset, build, inject, test
+run.cmd -NoUpdate  :: bỏ qua tải source/quét offset (máy công ty chặn node ra mạng)
 run.cmd -Eject     :: gỡ panel, khôi phục hàm gốc của game
 run.cmd -Check     :: chỉ kiểm tra prerequisites, không cài gì
 ```

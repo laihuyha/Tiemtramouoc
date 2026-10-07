@@ -5,6 +5,7 @@
   .\run.ps1            # cài thứ còn thiếu -> mở game -> build -> inject
   .\run.ps1 -Test      # như trên + chạy test trên game thật
   .\run.ps1 -Update    # game vừa update: tải source mới, quét offset (--write), build, inject, test
+  .\run.ps1 -NoUpdate # bỏ qua tải source/quét offset (máy chặn mạng của node), dùng bindings.json hiện có
   .\run.ps1 -Eject     # gỡ panel, khôi phục hàm gốc
   .\run.ps1 -Check     # chỉ kiểm tra prerequisites, không cài gì
 #>
@@ -12,6 +13,7 @@
 param(
   [switch]$Test,
   [switch]$Update,
+  [switch]$NoUpdate,
   [switch]$Eject,
   [switch]$Check,
   [int]$Port = 9222
@@ -131,7 +133,7 @@ Open-GameTab $browser $gameUrl $gameHost
 if ($Eject) { Invoke-Step 'inject.mjs' @('--eject'); exit 0 }
 
 $needSources = -not (Test-Path (Join-Path $Root 'js\game.js'))
-if ($Update -or $needSources) {
+if (-not $NoUpdate -and ($Update -or $needSources)) {
   Say '== Source game + offset ==' 'Cyan'
   $scanArgs = @('--fetch')
   if ($Update) { $scanArgs += '--write' }
