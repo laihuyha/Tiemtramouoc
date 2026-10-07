@@ -2,6 +2,8 @@ name: Release
 
 on:
   push:
+    branches: [main]
+    paths: ['tool-panel/**', '.github/workflows/release.yml']
     tags: ['v*']
   workflow_dispatch:
     inputs:
@@ -16,7 +18,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      # push to main -> auto tag v1.0.<run_number>; tag push / manual run -> that tag
+      TAG: ${{ github.event.inputs.tag || (github.ref_type == 'tag' && github.ref_name) || format('v1.0.{0}', github.run_number) }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
